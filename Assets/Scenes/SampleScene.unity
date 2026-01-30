@@ -482,7 +482,7 @@ GameObject:
   - component: {fileID: 135998769}
   - component: {fileID: 135998771}
   - component: {fileID: 135998770}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1712,7 +1712,7 @@ MonoBehaviour:
   airJumpVelocityResetThreshold: -5
   wallLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   WallCheckDistance: 0.7
   wallSlideSpeed: 2
   wallJumpAngle: 60
@@ -4997,7 +4997,7 @@ GameObject:
   - component: {fileID: 1914430654}
   - component: {fileID: 1914430653}
   - component: {fileID: 1914430655}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class UpperBodyController : MonoBehaviour
 {
+    public PlayerController playerController;
     [Header("Grappling Settings")]
     public Camera mainCamera;
     public LineRenderer lineRenderer;
@@ -51,7 +52,6 @@ public class UpperBodyController : MonoBehaviour
     private bool wallOnLeft;
     private bool wallOnRight;
     private float defaultGravity;
-    private PlayerController playerController;
     private bool wasTouchingWall;
     private float wallStickCooldown;
 
@@ -72,7 +72,6 @@ public class UpperBodyController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerController = GetComponent<PlayerController>();
         defaultGravity = rb.gravityScale;
         lineRenderer.positionCount = 0;
         
@@ -119,7 +118,12 @@ public class UpperBodyController : MonoBehaviour
     {
         if (isGrappling)
         {
+            playerController.enabled = false;
             ApplyRopePhysics();
+        }
+        else
+        {
+            playerController.enabled = true;
         }
         
         HandleWallClimbing(); // Apply climbing physics

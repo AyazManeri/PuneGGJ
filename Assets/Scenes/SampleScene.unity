@@ -2232,6 +2232,7 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  disableGravity: 0
 --- !u!1 &535787837
 GameObject:
   m_ObjectHideFlags: 0
@@ -3724,6 +3725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f769658a2077403bbf728237f950b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperBodyController
+  playerController: {fileID: 0}
   mainCamera: {fileID: 519420031}
   lineRenderer: {fileID: 1747645447}
   grappleMask:
@@ -4379,6 +4381,7 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  disableGravity: 0
 --- !u!50 &1310750969
 Rigidbody2D:
   serializedVersion: 5
@@ -5366,7 +5369,7 @@ MonoBehaviour:
   groundingForce: -1
   groundDistance: 0.05
   jumpType: 0
-  jumpForce: 30
+  jumpForce: 15
   maxFallSpeed: 40
   fallAcceleration: 70
   coyoteTime: 0.2
@@ -5377,7 +5380,7 @@ MonoBehaviour:
   allowWallJump: 0
   allowWallClimb: 0
   allowWallSlide: 0
-  allowWallStick: 1
+  allowWallStick: 0
   maxAirJumps: 1
   airJumpPower: 32
   airJumpsResetVelocity: 1
@@ -5397,12 +5400,13 @@ MonoBehaviour:
   wallClimbAngle: 60
   wallClimbSpeed: 5
   wallStickCooldownDuration: 0.2
-  wallStickJumpForce: 15
+  wallStickJumpForce: 20
   dashSpeed: 25
   dashDuration: 0.15
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  disableGravity: 1
 --- !u!50 &1636664588
 Rigidbody2D:
   serializedVersion: 5
@@ -5418,7 +5422,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5520,6 +5524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f769658a2077403bbf728237f950b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperBodyController
+  playerController: {fileID: 1636664587}
   mainCamera: {fileID: 519420031}
   lineRenderer: {fileID: 2137203158}
   grappleMask:
@@ -5542,7 +5547,7 @@ MonoBehaviour:
     m_Bits: 64
   wallClimbSpeed: 10
   wallCheckDistance: 0.74
-  wallJumpForce: 10
+  wallJumpForce: 15
 --- !u!1 &1639170457
 GameObject:
   m_ObjectHideFlags: 0

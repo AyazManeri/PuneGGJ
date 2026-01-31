@@ -14,6 +14,13 @@ public class UpperBodyController : MonoBehaviour
     public float initialRopeOffset = 1f; // Offset to subtract from projected vertical length 
     public float minRopeLength = 1f; // Minimum length the rope can contract to 
 
+    [Header("Grappling Animation")]
+    public float grappleShootSpeed = 40f;
+    public float waveAmplitude = 1f; 
+    public float waveFrequency = 10f;
+    public int resolution = 20;
+    public Transform hookVisualization; // Optional: Assign a sprite/object to be the "hook"
+
     [Header("Physics Settings")]
     public float climbSpeed = 5f;     
     public float swingForce = 80f;    
@@ -24,6 +31,11 @@ public class UpperBodyController : MonoBehaviour
     private List<RopePoint> ropePoints = new List<RopePoint>();
     private float totalRopeLength;
     private bool isGrappling;
+    
+    // Shooting State
+    private bool isShooting;
+    private Vector2 currentHookPosition;
+    private Vector2 shootTargetPosition;
 
     // Gizmo Debug Variables
     private Vector2 debugLowerPoint;
@@ -96,6 +108,11 @@ public class UpperBodyController : MonoBehaviour
             HandleUnwrapping();
             UpdateLineRenderer();
         }
+        else if (isShooting)
+        {
+            UpdateShootingLogic();
+            UpdateLineRenderer();
+        }
     }
 
     void FixedUpdate()
@@ -122,36 +139,15 @@ public class UpperBodyController : MonoBehaviour
 
             if (hit.collider != null)
             {
-                isGrappling = true;
-                ropePoints.Clear();
-                ropePoints.Add(new RopePoint(hit.point, false, Time.time)); 
+                // Start Shooting Animation
+                isShooting = true;
+                shootTargetPosition = hit.point;
+                currentHookPosition = grappleOrigin.position; // Start from gun/hand
                 
-                // Calculate the vector from the character's lower point to the hit point (Green Line)
-                CapsuleCollider2D col = GetComponentInChildren<CapsuleCollider2D>();
-                Vector2 lowerPoint = transform.position;
-                if (col != null)
-                {
-                    //lowerPoint = new Vector2(col.bounds.center.x, col.bounds.min.y);
-                }
-                
-                Vector2 vectorToHit = hit.point - lowerPoint;
-
-                // Project this vector onto the vertical axis (Orange Line)
-                // Vector2.Project does not exist, use Vector3.Project
-                Vector3 vectorToHit3D = vectorToHit;
-                Vector3 projectedVerticalVector = Vector3.Project(vectorToHit3D, Vector2.up);
-                float orangeLength = projectedVerticalVector.magnitude;
-                
-                // Visualization Data
-                debugLowerPoint = lowerPoint;
+                // Visualization Data (keep debug info)
+                debugLowerPoint = transform.position; // Approximate
                 debugHitPoint = hit.point;
-                debugProjectedVector = projectedVerticalVector;
-                
-                Debug.Log($"Grapple Hit. VectorToHit: {vectorToHit}, Vertical Projection: {orangeLength}");
-
-                // Set rope length to this vertical length minus offset
-                totalRopeLength = Mathf.Max(orangeLength - initialRopeOffset, minRopeLength);
-                Debug.Log($"[Grapple] Initial Rope Length Set To: {totalRopeLength} (Orange: {orangeLength}, Offset: {initialRopeOffset})");
+                // Calculations for Orange Line happening on arrival now
             }
         }
 
@@ -159,7 +155,9 @@ public class UpperBodyController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             isGrappling = false;
+            isShooting = false; // Cancel shooting if button released early
             lineRenderer.positionCount = 0;
+            if (hookVisualization) hookVisualization.gameObject.SetActive(false);
         }
 
         // 3. Adjust Rope Length (W/S or Up/Down)
@@ -259,12 +257,95 @@ public class UpperBodyController : MonoBehaviour
 
     void UpdateLineRenderer()
     {
+        if (isShooting)
+        {
+             lineRenderer.positionCount = resolution;
+             Vector2 start = grappleOrigin.position;
+             Vector2 end = currentHookPosition;
+             Vector2 dir = (end - start).normalized;
+             Vector2 perp = Vector2.Perpendicular(dir); // Get perpendicular vector for wave offset
+             
+             float distance = Vector2.Distance(start, end);
+
+             for (int i = 0; i < resolution; i++)
+             {
+                 float t = (float)i / (float)(resolution - 1); // 0 to 1
+                 Vector2 point = Vector2.Lerp(start, end, t);
+                 
+                 // Sine Wave Calculation
+                 // t * freq: spatial frequency
+                 // Time.time * X: speed of wave travel
+                 float wave = Mathf.Sin(t * waveFrequency + Time.time * 20f);
+                 
+                 // Dampen at ends so it stays connected to gun and hook
+                 // Math.Sin(t * PI) is 0 at 0, 1 at 0.5, 0 at 1
+                 float dampen = Mathf.Sin(t * Mathf.PI);
+                 
+                 Vector2 offset = perp * wave * waveAmplitude * dampen;
+                 
+                 lineRenderer.SetPosition(i, point + offset);
+             }
+             return;
+        }
+
         lineRenderer.positionCount = ropePoints.Count + 1;
         for (int i = 0; i < ropePoints.Count; i++)
         {
             lineRenderer.SetPosition(i, ropePoints[i].position);
         }
         lineRenderer.SetPosition(ropePoints.Count, grappleOrigin.position); // Connect line to origin
+    }
+
+    void UpdateShootingLogic()
+    {
+        // Move hook towards target
+        currentHookPosition = Vector2.MoveTowards(currentHookPosition, shootTargetPosition, grappleShootSpeed * Time.deltaTime);
+        
+        // Update Visuals
+        if (hookVisualization != null)
+        {
+            hookVisualization.gameObject.SetActive(true);
+            hookVisualization.position = currentHookPosition;
+            
+            // Optional: Rotate hook to face direction
+            Vector2 dir = (shootTargetPosition - (Vector2)grappleOrigin.position).normalized;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            hookVisualization.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
+        // Check if reached
+        if (Vector2.Distance(currentHookPosition, shootTargetPosition) < 0.1f)
+        {
+            isShooting = false;
+            StartGrapple(shootTargetPosition);
+        }
+    }
+
+    void StartGrapple(Vector2 hitPoint)
+    {
+        isGrappling = true;
+        ropePoints.Clear();
+        ropePoints.Add(new RopePoint(hitPoint, false, Time.time)); 
+        
+        // Calculate the vector from the character's lower point to the hit point (Green Line)
+        // CapsuleCollider2D col = GetComponentInChildren<CapsuleCollider2D>(); // Optimization: Get cached or assume available
+        Vector2 lowerPoint = transform.position;
+        // if (col != null) lowerPoint = new Vector2(col.bounds.center.x, col.bounds.min.y);
+        
+        Vector2 vectorToHit = hitPoint - lowerPoint;
+
+        // Project this vector onto the vertical axis (Orange Line)
+        Vector3 vectorToHit3D = vectorToHit;
+        Vector3 projectedVerticalVector = Vector3.Project(vectorToHit3D, Vector2.up);
+        float orangeLength = projectedVerticalVector.magnitude;
+        
+        debugProjectedVector = projectedVerticalVector; // Debug
+        
+        // Set rope length to this vertical length minus offset
+        totalRopeLength = Mathf.Max(orangeLength - initialRopeOffset, minRopeLength);
+        
+        // Hide Hook Visual if desired, or keep it at the end of the rope
+        if (hookVisualization) hookVisualization.gameObject.SetActive(false); 
     }
 
     // Replaced CheckForWall with Collision events as requested

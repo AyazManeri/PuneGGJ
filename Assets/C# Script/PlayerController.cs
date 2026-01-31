@@ -48,8 +48,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpEndEarlyMultiplier = 5f;
     private float variableJumpMultiplier = 0.5f;
 
+    [Header("Abilities")]
+    [SerializeField] private bool allowDoubleJump = true;
+    [SerializeField] private bool allowDash = true;
+    [SerializeField] private bool allowWallJump = true;
+    [SerializeField] private bool allowWallClimb = true;
+    [SerializeField] private bool allowWallSlide = true;
+
     [Header("Double Jump Settings")]
-    [SerializeField] bool enableDoubleJump = true;
+    // [SerializeField] bool enableDoubleJump = true; // Refactored to allowDoubleJump
     [SerializeField] int maxAirJumps = 1;
     [SerializeField] float airJumpPower = 32f;
     [SerializeField] bool airJumpsResetVelocity = true;
@@ -335,7 +342,7 @@ public class PlayerController : MonoBehaviour
     }
     bool CanDoAirJump()
     {
-        if (!enableDoubleJump || airJumpsUsed >= maxAirJumps || isSlidingOnWall || currentlyWallJumping || currentlyDashing || isGrounded)
+        if (!allowDoubleJump || airJumpsUsed >= maxAirJumps || isSlidingOnWall || currentlyWallJumping || currentlyDashing || isGrounded)
         {
             return false;
         }
@@ -507,7 +514,7 @@ public class PlayerController : MonoBehaviour
             holdingTowardWall = false;
         }
 
-        canSlideOnWall = !isGrounded && (wallOnLeft || wallOnRight) && currentVelocity.y <= 0 && !currentlyDashing;
+        canSlideOnWall = allowWallSlide && !isGrounded && (wallOnLeft || wallOnRight) && currentVelocity.y <= 0 && !currentlyDashing;
         isSlidingOnWall = canSlideOnWall && holdingTowardWall && !currentlyWallJumping && !currentlyDashing;
 
 
@@ -541,7 +548,7 @@ public class PlayerController : MonoBehaviour
 
     private bool ShouldClimbSameWall()
     {
-        return currentInput.Move.y > 0.1f; // in order to climb same wall player need to hold W or up arrow key 
+        return allowWallClimb && currentInput.Move.y > 0.1f; // in order to climb same wall player need to hold W or up arrow key 
     }
     private void DoWallJump()
     {
@@ -589,6 +596,8 @@ public class PlayerController : MonoBehaviour
     }
     bool CanDoWallJump()
     {
+        if (!allowWallJump) return false;
+
         bool onWallOrRecent = isSlidingOnWall || (walljumpTimer > 0 && (wallOnLeft || wallOnRight));
         if (enableWallJumpChaining && !isGrounded)
         {
@@ -629,7 +638,7 @@ public class PlayerController : MonoBehaviour
     }
     bool CanPlayerDash()
     {
-        if (!canDash || dashCooldownTimer > 0)
+        if (!allowDash || !canDash || dashCooldownTimer > 0)
             return false;
 
         if (!isGrounded && dashesUsed >= maxAirDashes && canDashInAir)

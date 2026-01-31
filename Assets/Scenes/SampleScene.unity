@@ -1167,7 +1167,7 @@ GameObject:
   - component: {fileID: 459553870}
   - component: {fileID: 459553869}
   - component: {fileID: 459553868}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1395,7 +1395,7 @@ Transform:
   m_GameObject: {fileID: 467617712}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.22, y: 3.1100001, z: -10}
+  m_LocalPosition: {x: 5.23, y: 3.1100001, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1533,7 +1533,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.22, y: 3.1100001, z: -10}
+  m_LocalPosition: {x: 5.23, y: 3.1100001, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1592,7 +1592,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!50 &535086197
 Rigidbody2D:
   serializedVersion: 5
@@ -1688,7 +1688,7 @@ Transform:
   m_GameObject: {fileID: 535086195}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.22, y: -2.19, z: 0}
+  m_LocalPosition: {x: 5.23, y: -2.19, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2730,7 +2730,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 984446852}
@@ -3264,13 +3264,20 @@ MonoBehaviour:
   lineRenderer: {fileID: 1747645447}
   grappleMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   grappleOrigin: {fileID: 1668688095}
-  maxRopeDistance: 8
-  climbSpeed: 10
-  swingForce: 20
-  damper: 10
+  initialRopeOffset: 2
+  minRopeLength: 0.5
+  climbSpeed: 30
+  swingForce: 50
+  damper: 20
   wrapOffset: 0.1
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 64
+  wallClimbSpeed: 10
+  wallCheckDistance: 0.74
+  wallJumpForce: 10
 --- !u!50 &984446851
 Rigidbody2D:
   serializedVersion: 5
@@ -3286,7 +3293,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3326,6 +3333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1049617189}
   - component: {fileID: 1049617190}
+  - component: {fileID: 1049617191}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -3343,7 +3351,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1605013427}
@@ -3407,6 +3415,43 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!70 &1049617191
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049617188}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 2}
+  m_Direction: 0
 --- !u!1 &1053018864
 GameObject:
   m_ObjectHideFlags: 0
@@ -5973,7 +6018,7 @@ GameObject:
   - component: {fileID: 2017316653}
   - component: {fileID: 2017316655}
   - component: {fileID: 2017316654}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Square (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6288,10 +6333,10 @@ SceneRoots:
   m_Roots:
   - {fileID: 619394802}
   - {fileID: 519420032}
-  - {fileID: 535086200}
   - {fileID: 1639170459}
   - {fileID: 974551110}
   - {fileID: 37414756}
   - {fileID: 467617715}
   - {fileID: 984446852}
   - {fileID: 1605013427}
+  - {fileID: 535086200}

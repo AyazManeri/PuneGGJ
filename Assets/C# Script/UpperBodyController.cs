@@ -303,12 +303,8 @@ public class UpperBodyController : MonoBehaviour
                  // Calculate target X based on wall hit
                  float targetX = closestHit.point.x + (dir * offset);
                  
-                 // Creating snap position: Target X, but Current Y (don't move up/down)
-                 Vector2 snapPos = new Vector2(targetX, currentCenter.y);
-                 
-                 Vector3 shift = snapPos - currentCenter;
-                 
-                 transform.position += shift;
+                 // Smoothly snap to target X
+                 StartCoroutine(SmoothSnapToWall(targetX, 0.1f));
                  
                  // Kill horizontal velocity immediately
                  rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
@@ -328,16 +324,38 @@ public class UpperBodyController : MonoBehaviour
         // Update state for next frame
         wasTouchingWall = isTouchingWall;
         
-        // Safety: If somehow we are climbing but not touching (e.g. slight gap), unstick? 
-        // The Exit logic covers it, but 'isTouchingWall' generally handles it.
-        // However, if we jumped (isWallClimbing set false), but are still touching, we don't want to re-enter.
-        // The above "Enter" logic (isTouchingWall && !wasTouchingWall) handles that perfectly.
-        // It won't fire again until we leave and return.
-
         // Jump off
         if (Input.GetKeyDown(KeyCode.Space) && isWallClimbing)
         {
             WallJump();
+        }
+    }
+
+    System.Collections.IEnumerator SmoothSnapToWall(float targetX, float duration)
+    {
+        float elapsed = 0f;
+        float startX = transform.position.x;
+        
+        while (elapsed < duration)
+        {
+            // If we stopped climbing, abort snap
+            if (!isWallClimbing) yield break;
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            
+            // Smooth step for more natural feel
+            t = t * t * (3f - 2f * t);
+            
+            float newX = Mathf.Lerp(startX, targetX, t);
+            transform.position = new Vector3(newX, transform.position.y, transform.position.z);
+            yield return null;
+        }
+        
+        // Final ensure
+        if (isWallClimbing)
+        {
+            transform.position = new Vector3(targetX, transform.position.y, transform.position.z);
         }
     }
 

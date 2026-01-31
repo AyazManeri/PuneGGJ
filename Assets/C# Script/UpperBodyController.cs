@@ -12,6 +12,7 @@ public class UpperBodyController : MonoBehaviour
     
  
     public float initialRopeOffset = 1f; // Offset to subtract from projected vertical length 
+    public float minRopeLength = 1f; // Minimum length the rope can contract to 
 
     [Header("Physics Settings")]
     public float climbSpeed = 5f;     
@@ -149,7 +150,7 @@ public class UpperBodyController : MonoBehaviour
                 Debug.Log($"Grapple Hit. VectorToHit: {vectorToHit}, Vertical Projection: {orangeLength}");
 
                 // Set rope length to this vertical length minus offset
-                totalRopeLength = Mathf.Max(orangeLength - initialRopeOffset, 1f);
+                totalRopeLength = Mathf.Max(orangeLength - initialRopeOffset, minRopeLength);
                 Debug.Log($"[Grapple] Initial Rope Length Set To: {totalRopeLength} (Orange: {orangeLength}, Offset: {initialRopeOffset})");
             }
         }
@@ -169,8 +170,8 @@ public class UpperBodyController : MonoBehaviour
             {
                 totalRopeLength -= verticalInput * climbSpeed * Time.deltaTime;
                 
-                // Clamp length: Minimum 1.0f, No Max Limit
-                totalRopeLength = Mathf.Max(totalRopeLength, 1f);
+                // Clamp length: Minimum minRopeLength, No Max Limit
+                totalRopeLength = Mathf.Max(totalRopeLength, minRopeLength);
             }
         }
     }

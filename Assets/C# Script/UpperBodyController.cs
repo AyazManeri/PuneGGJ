@@ -278,8 +278,10 @@ public class UpperBodyController : MonoBehaviour
                  float wave = Mathf.Sin(t * waveFrequency + Time.time * 20f);
                  
                  // Dampen at ends so it stays connected to gun and hook
-                 // Math.Sin(t * PI) is 0 at 0, 1 at 0.5, 0 at 1
-                 float dampen = Mathf.Sin(t * Mathf.PI);
+                 // Use a steeper curve so the wave is visible along most of the rope
+                 // 1 - (2t - 1)^4 is flat at top and drops at ends
+                 float val = Mathf.Abs(2f * t - 1f);
+                 float dampen = 1f - (val * val * val * val);
                  
                  Vector2 offset = perp * wave * waveAmplitude * dampen;
                  

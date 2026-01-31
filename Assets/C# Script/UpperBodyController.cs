@@ -10,19 +10,24 @@ public class UpperBodyController : MonoBehaviour
     
     public Transform grappleOrigin; // The origin point for the rope (e.g. hand or gun nozzle)
     
-    [Tooltip("The max length of the rope. If you grapple something further than this, you will be pulled in.")]
-    public float maxRopeDistance = 20f; 
+ 
+    public float initialRopeOffset = 1f; // Offset to subtract from projected vertical length 
 
     [Header("Physics Settings")]
     public float climbSpeed = 5f;     
-    public float swingForce = 40f;    
-    public float damper = 10f;        
+    public float swingForce = 80f;    
+    public float damper = 5f;        
     public float wrapOffset = 0.1f;   
 
     private Rigidbody2D rb;
     private List<RopePoint> ropePoints = new List<RopePoint>();
     private float totalRopeLength;
     private bool isGrappling;
+
+    // Gizmo Debug Variables
+    private Vector2 debugLowerPoint;
+    private Vector2 debugHitPoint;
+    private Vector2 debugProjectedVector;
     
     [Header("Wall Climbing Settings")]
     public LayerMask wallMask; // Added separate mask for clarity
@@ -120,11 +125,32 @@ public class UpperBodyController : MonoBehaviour
                 ropePoints.Clear();
                 ropePoints.Add(new RopePoint(hit.point, false, Time.time)); 
                 
-                float actualDistance = Vector2.Distance(originPos, hit.point);
+                // Calculate the vector from the character's lower point to the hit point (Green Line)
+                CapsuleCollider2D col = GetComponentInChildren<CapsuleCollider2D>();
+                Vector2 lowerPoint = transform.position;
+                if (col != null)
+                {
+                    //lowerPoint = new Vector2(col.bounds.center.x, col.bounds.min.y);
+                }
+                
+                Vector2 vectorToHit = hit.point - lowerPoint;
 
-                // CLAMP LOGIC: If actual distance > max, set rope length to max (causes immediate pull)
-                // Otherwise, just use the actual distance.
-                totalRopeLength = Mathf.Min(actualDistance, maxRopeDistance);
+                // Project this vector onto the vertical axis (Orange Line)
+                // Vector2.Project does not exist, use Vector3.Project
+                Vector3 vectorToHit3D = vectorToHit;
+                Vector3 projectedVerticalVector = Vector3.Project(vectorToHit3D, Vector2.up);
+                float orangeLength = projectedVerticalVector.magnitude;
+                
+                // Visualization Data
+                debugLowerPoint = lowerPoint;
+                debugHitPoint = hit.point;
+                debugProjectedVector = projectedVerticalVector;
+                
+                Debug.Log($"Grapple Hit. VectorToHit: {vectorToHit}, Vertical Projection: {orangeLength}");
+
+                // Set rope length to this vertical length minus offset
+                totalRopeLength = Mathf.Max(orangeLength - initialRopeOffset, 1f);
+                Debug.Log($"[Grapple] Initial Rope Length Set To: {totalRopeLength} (Orange: {orangeLength}, Offset: {initialRopeOffset})");
             }
         }
 
@@ -143,8 +169,8 @@ public class UpperBodyController : MonoBehaviour
             {
                 totalRopeLength -= verticalInput * climbSpeed * Time.deltaTime;
                 
-                // Clamp length: Minimum 1.0f, Maximum is maxRopeDistance
-                totalRopeLength = Mathf.Clamp(totalRopeLength, 1f, maxRopeDistance);
+                // Clamp length: Minimum 1.0f, No Max Limit
+                totalRopeLength = Mathf.Max(totalRopeLength, 1f);
             }
         }
     }
@@ -428,7 +454,24 @@ public class UpperBodyController : MonoBehaviour
         Gizmos.DrawLine(middlePoint, middlePoint + Vector2.right * wallCheckDistance);
         Gizmos.DrawLine(bottomPoint, bottomPoint + Vector2.right * wallCheckDistance);
         
-         // Add solid indicators
+        // Add solid indicators
         Gizmos.DrawSphere(topPoint + Vector2.right * wallCheckDistance, 0.05f);
+        
+        // Grapple Debug Gizmos
+        if (debugHitPoint != Vector2.zero)
+        {
+            // Green Line (Hypotenuse: Lower Point -> Hit Point)
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(debugLowerPoint, debugHitPoint);
+
+            // Orange Line (Projected Vertical: Lower Point -> Lower Point + Up * magnitude)
+            // Or actually, projection starts from origin of vector (Lower Point)
+            Gizmos.color = new Color(1f, 0.5f, 0f); // Orange
+            Gizmos.DrawLine(debugLowerPoint, debugLowerPoint + debugProjectedVector);
+            
+             // Draw sphere at hit
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(debugHitPoint, 0.1f);
+        }
     }
 }

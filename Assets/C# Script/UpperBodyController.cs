@@ -8,6 +8,8 @@ public class UpperBodyController : MonoBehaviour
     public LineRenderer lineRenderer;
     public LayerMask grappleMask;
     
+    public Transform grappleOrigin; // The origin point for the rope (e.g. hand or gun nozzle)
+    
     [Tooltip("The max length of the rope. If you grapple something further than this, you will be pulled in.")]
     public float maxRopeDistance = 20f; 
 
@@ -26,14 +28,23 @@ public class UpperBodyController : MonoBehaviour
     {
         public Vector2 position;
         public bool isClockwise;
+        public float creationTime;
         
-        public RopePoint(Vector2 pos, bool cw) { position = pos; isClockwise = cw; }
+        public RopePoint(Vector2 pos, bool cw, float time) 
+        { 
+            position = pos; 
+            isClockwise = cw; 
+            creationTime = time; 
+        }
     }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         lineRenderer.positionCount = 0;
+        
+        // Default to self if no origin assigned
+        if (grappleOrigin == null) grappleOrigin = transform;
     }
 
     void Update()
@@ -60,19 +71,20 @@ public class UpperBodyController : MonoBehaviour
         // 1. Fire Grapple (Left Click)
         if (Input.GetMouseButtonDown(0))
         {
+            Vector2 originPos = grappleOrigin.position; // Use the grapple origin
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = (mousePos - (Vector2)transform.position).normalized;
+            Vector2 direction = (mousePos - originPos).normalized;
             
             // Raycast is Infinite so you can hit far objects
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, Mathf.Infinity, grappleMask);
+            RaycastHit2D hit = Physics2D.Raycast(originPos, direction, Mathf.Infinity, grappleMask);
 
             if (hit.collider != null)
             {
                 isGrappling = true;
                 ropePoints.Clear();
-                ropePoints.Add(new RopePoint(hit.point, false)); 
+                ropePoints.Add(new RopePoint(hit.point, false, Time.time)); 
                 
-                float actualDistance = Vector2.Distance(transform.position, hit.point);
+                float actualDistance = Vector2.Distance(originPos, hit.point);
 
                 // CLAMP LOGIC: If actual distance > max, set rope length to max (causes immediate pull)
                 // Otherwise, just use the actual distance.
@@ -105,7 +117,7 @@ public class UpperBodyController : MonoBehaviour
     {
         if (ropePoints.Count == 0) return;
 
-        Vector2 playerPos = transform.position;
+        Vector2 playerPos = grappleOrigin.position; // Check wrapping from origin
         Vector2 lastAnchor = ropePoints[ropePoints.Count - 1].position;
         
         RaycastHit2D hit = Physics2D.Linecast(playerPos, lastAnchor, grappleMask);
@@ -114,25 +126,28 @@ public class UpperBodyController : MonoBehaviour
         {
             Vector2 newPointPos = hit.point + (hit.normal * wrapOffset);
 
-            Vector2 previousSegment = lastAnchor - playerPos; 
-            if (ropePoints.Count > 1)
-            {
-                previousSegment = lastAnchor - ropePoints[ropePoints.Count - 2].position;
-            }
+            // Calculate winding direction based on the player's position relative to the new segment.
+            // This MUST match the logic in HandleUnwrapping to ensure the point isn't immediately removed.
             
-            Vector2 currentSegment = newPointPos - lastAnchor;
-            float cross = (previousSegment.x * currentSegment.y) - (previousSegment.y * currentSegment.x);
+            Vector2 segmentVector = newPointPos - lastAnchor;      // The new rope segment (Anchor -> Hit)
+            Vector2 playerVector = playerPos - newPointPos;        // Vector from Hit -> Player
+            
+            float cross = (segmentVector.x * playerVector.y) - (segmentVector.y * playerVector.x);
             bool isCW = cross < 0;
 
-            ropePoints.Add(new RopePoint(newPointPos, isCW));
+            ropePoints.Add(new RopePoint(newPointPos, isCW, Time.time));
         }
     }
 
     void HandleUnwrapping()
     {
         if (ropePoints.Count <= 1) return;
+        
+        // Prevent immediate unwrapping to stop jitter/flicker
+        // A point must exist for at least 0.1s before it can be removed.
+        if (Time.time < ropePoints[ropePoints.Count - 1].creationTime + 0.1f) return;
 
-        Vector2 playerPos = transform.position;
+        Vector2 playerPos = grappleOrigin.position; // Check unwrapping from origin
         Vector2 currentAnchor = ropePoints[ropePoints.Count - 1].position;
         Vector2 previousAnchor = ropePoints[ropePoints.Count - 2].position;
 
@@ -151,8 +166,10 @@ public class UpperBodyController : MonoBehaviour
     void ApplyRopePhysics()
     {
         Vector2 anchor = ropePoints[ropePoints.Count - 1].position;
-        Vector2 direction = (anchor - (Vector2)transform.position).normalized;
-        float currentDistance = Vector2.Distance(transform.position, anchor);
+        Vector2 originPos = grappleOrigin.position;
+        
+        Vector2 direction = (anchor - originPos).normalized;
+        float currentDistance = Vector2.Distance(originPos, anchor);
 
         float staticLength = 0;
         for(int i=0; i < ropePoints.Count - 1; i++)
@@ -184,6 +201,6 @@ public class UpperBodyController : MonoBehaviour
         {
             lineRenderer.SetPosition(i, ropePoints[i].position);
         }
-        lineRenderer.SetPosition(ropePoints.Count, transform.position);
+        lineRenderer.SetPosition(ropePoints.Count, grappleOrigin.position); // Connect line to origin
     }
 }

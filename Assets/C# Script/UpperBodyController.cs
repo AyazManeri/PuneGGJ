@@ -35,6 +35,7 @@ public class UpperBodyController : MonoBehaviour
     private float defaultGravity;
     private PlayerController playerController;
     private bool wasTouchingWall;
+    private float wallStickCooldown;
 
     private struct RopePoint
     {
@@ -76,8 +77,11 @@ public class UpperBodyController : MonoBehaviour
 
     void Update()
     {
+        if (wallStickCooldown > 0)
+            wallStickCooldown -= Time.deltaTime;
+
         HandleInput();
-        CheckForWall(); // Constantly check for walls
+        CheckJumpInput(); // Replaced CheckForWall
 
         if (isGrappling)
         {
@@ -235,95 +239,73 @@ public class UpperBodyController : MonoBehaviour
         lineRenderer.SetPosition(ropePoints.Count, grappleOrigin.position); // Connect line to origin
     }
 
-    void CheckForWall()
+    // Replaced CheckForWall with Collision events as requested
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Use CapsuleCollider bounds for more accurate detection (like PlayerController)
-        CapsuleCollider2D cc = GetComponentInChildren<CapsuleCollider2D>();
-        if (cc == null) return;
-
-        Vector2 topPoint = new Vector2(cc.bounds.center.x, cc.bounds.max.y - 0.1f);
-        Vector2 middlePoint = cc.bounds.center;
-        Vector2 bottomPoint = new Vector2(cc.bounds.center.x, cc.bounds.min.y + 0.1f);
-
-        // Check Left - Use wallMask
-        RaycastHit2D leftTop = Physics2D.Raycast(topPoint, Vector2.left, wallCheckDistance, wallMask);
-        RaycastHit2D leftMiddle = Physics2D.Raycast(middlePoint, Vector2.left, wallCheckDistance, wallMask);
-        RaycastHit2D leftBottom = Physics2D.Raycast(bottomPoint, Vector2.left, wallCheckDistance, wallMask);
-        
-        wallOnLeft = leftTop.collider != null || leftMiddle.collider != null || leftBottom.collider != null;
-
-        // Check Right - Use wallMask
-        RaycastHit2D rightTop = Physics2D.Raycast(topPoint, Vector2.right, wallCheckDistance, wallMask);
-        RaycastHit2D rightMiddle = Physics2D.Raycast(middlePoint, Vector2.right, wallCheckDistance, wallMask);
-        RaycastHit2D rightBottom = Physics2D.Raycast(bottomPoint, Vector2.right, wallCheckDistance, wallMask);
-        
-        wallOnRight = rightTop.collider != null || rightMiddle.collider != null || rightBottom.collider != null;
-
-        bool isTouchingWall = wallOnLeft || wallOnRight;
-
-        // Event-Based Logic:
-        // 1. Enter Wall Connection
-        if (isTouchingWall && !wasTouchingWall)
+        // Check Layer
+        if (((1 << collision.gameObject.layer) & wallMask) != 0)
         {
-            Debug.Log("Wall Detected: Sticking");
-            isWallClimbing = true;
-            
-            // SNAP TO WALL
-            // Find the closest hit to snap validly
-            RaycastHit2D closestHit = new RaycastHit2D();
-            float closeDist = float.MaxValue;
-            
-            // Helper to check hits
-            void CheckHit(RaycastHit2D h) 
-            {
-               if(h.collider != null && h.distance < closeDist) 
-               {
-                   closeDist = h.distance;
-                   closestHit = h;
-               }
-            }
+            // Check Cooldown
+            if (wallStickCooldown > 0) return;
 
-            if (wallOnLeft)
+            // Determine side based on normal
+            // Normal points AWAY from the wall (Right if wall is on Left)
+            Vector2 normal = collision.GetContact(0).normal;
+            
+            if (normal.x > 0.5f) 
             {
-                CheckHit(leftTop); CheckHit(leftMiddle); CheckHit(leftBottom);
+                wallOnLeft = true;
+                wallOnRight = false;
+            }
+            else if (normal.x < -0.5f)
+            {
+                wallOnLeft = false;
+                wallOnRight = true;
             }
             else
             {
-                CheckHit(rightTop); CheckHit(rightMiddle); CheckHit(rightBottom);
+                // Floor/Ceiling
+                return;
             }
 
-            if (closestHit.collider != null)
+            if (!isWallClimbing)
             {
-                 // We need to adjust the TRANSFORM position based on where the collider center is
-                 Vector2 currentCenter = cc.bounds.center;
+                 Debug.Log("Wall Hit: Sticking");
+                 isWallClimbing = true;
                  
-                 float offset = cc.bounds.extents.x + 0.02f; // Half width + small buffer
-                 float dir = wallOnLeft ? 1f : -1f;
-                 
-                 // Calculate target X based on wall hit
-                 float targetX = closestHit.point.x + (dir * offset);
-                 
-                 // Smoothly snap to target X
-                 StartCoroutine(SmoothSnapToWall(targetX, 0.1f));
-                 
-                 // Kill horizontal velocity immediately
-                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+                 // Snap Logic
+                 CapsuleCollider2D cc = GetComponentInChildren<CapsuleCollider2D>();
+                 if(cc)
+                 {
+                     float offset = cc.bounds.extents.x + 0.02f;
+                     float dir = wallOnLeft ? 1f : -1f;
+                     // Use Contact Point X as wall surface X
+                     float targetX = collision.GetContact(0).point.x + (dir * offset);
+                     StartCoroutine(SmoothSnapToWall(targetX, 0.1f));
+                 }
             }
         }
+    }
 
-        // 2. Stay on Wall (Optional: Check manual release?) 
-        // Currently, we just keep isWallClimbing true unless something sets it false.
-        
-        // 3. Exit Wall Connection
-        if (!isTouchingWall && wasTouchingWall)
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        // User requested to remove OnCollisionExit logic.
+        // State remains sticky until Jump (Space).
+        /*
+        if (((1 << collision.gameObject.layer) & wallMask) != 0)
         {
-            Debug.Log("Left Wall");
+            // Simple Exit logic
+            if(isWallClimbing) Debug.Log("Left Wall (Collision Exit)");
             isWallClimbing = false;
+            wallOnLeft = false;
+            wallOnRight = false;
         }
-
-        // Update state for next frame
-        wasTouchingWall = isTouchingWall;
-        
+        */
+    }
+    
+    // Manual CheckForWall removed, checking jump input in Update instead
+    void CheckJumpInput()
+    {
         // Jump off
         if (Input.GetKeyDown(KeyCode.Space) && isWallClimbing)
         {

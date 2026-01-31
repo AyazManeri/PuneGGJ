@@ -1288,8 +1288,8 @@ Transform:
   m_GameObject: {fileID: 459553867}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.7667, y: 0.2, z: 1}
+  m_LocalPosition: {x: 0, y: 0.000000022352, z: 0}
+  m_LocalScale: {x: 4.7667, y: 1.6595312, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 37414756}
@@ -1592,7 +1592,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!50 &535086197
 Rigidbody2D:
   serializedVersion: 5
@@ -1785,7 +1785,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   WallCheckDistance: 0.7
-  wallSlideSpeed: 2
+  wallSlideSpeed: 0.5
   wallJumpAngle: 60
   wallJumpTime: 0.2
   wallJumpInputBuffer: 0.1
@@ -3265,8 +3265,11 @@ MonoBehaviour:
   grappleMask:
     serializedVersion: 2
     m_Bits: 64
+  grappleOrigin: {fileID: 1668688095}
+  maxRopeDistance: 8
   climbSpeed: 10
   swingForce: 20
+  damper: 10
   wrapOffset: 0.1
 --- !u!50 &984446851
 Rigidbody2D:
@@ -3293,8 +3296,8 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!4 &984446852
 Transform:
   m_ObjectHideFlags: 0
@@ -3304,7 +3307,7 @@ Transform:
   m_GameObject: {fileID: 984446848}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.302, y: -0.433, z: 0}
+  m_LocalPosition: {x: 2.44, y: -0.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4781,7 +4784,7 @@ Transform:
   m_GameObject: {fileID: 1668688094}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.88, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4921,7 +4924,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 601b5b267b2fb44259a17c89ac235863, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4942,7 +4945,7 @@ LineRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 670554655
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
@@ -4955,7 +4958,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.18674695
         inSlope: 0
         outSlope: 0
         tangentMode: 0

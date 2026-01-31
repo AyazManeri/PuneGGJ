@@ -23,6 +23,17 @@ public class UpperBodyController : MonoBehaviour
     private List<RopePoint> ropePoints = new List<RopePoint>();
     private float totalRopeLength;
     private bool isGrappling;
+    
+    [Header("Wall Climbing Settings")]
+    public LayerMask wallMask; // Added separate mask for clarity
+    public float wallClimbSpeed = 5f;
+    public float wallCheckDistance = 0.6f;
+    public float wallJumpForce = 10f;
+    private bool isWallClimbing;
+    private bool wallOnLeft;
+    private bool wallOnRight;
+    private float defaultGravity;
+    private PlayerController playerController;
 
     private struct RopePoint
     {
@@ -41,15 +52,32 @@ public class UpperBodyController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerController = GetComponent<PlayerController>();
+        defaultGravity = rb.gravityScale;
         lineRenderer.positionCount = 0;
         
         // Default to self if no origin assigned
         if (grappleOrigin == null) grappleOrigin = transform;
+
+        // Validation
+        if (wallMask.value == 0)
+        {
+            Debug.LogWarning("WallClimbing: Wall Mask is Set to Nothing! Defaulting to GrappleMask.");
+            wallMask = grappleMask;
+        }
+        
+        // Try to find collider on this object or any child
+        if (GetComponentInChildren<CapsuleCollider2D>() == null)
+        {
+            Debug.LogError("WallClimbing: No CapsuleCollider2D found in children! Wall checks will fail.");
+        }
     }
 
     void Update()
     {
         HandleInput();
+        CheckForWall(); // Constantly check for walls
+
         if (isGrappling)
         {
             HandleWrapping();
@@ -64,6 +92,8 @@ public class UpperBodyController : MonoBehaviour
         {
             ApplyRopePhysics();
         }
+        
+        HandleWallClimbing(); // Apply climbing physics
     }
 
     void HandleInput()
@@ -202,5 +232,120 @@ public class UpperBodyController : MonoBehaviour
             lineRenderer.SetPosition(i, ropePoints[i].position);
         }
         lineRenderer.SetPosition(ropePoints.Count, grappleOrigin.position); // Connect line to origin
+    }
+
+    void CheckForWall()
+    {
+        // Use CapsuleCollider bounds for more accurate detection (like PlayerController)
+        CapsuleCollider2D cc = GetComponentInChildren<CapsuleCollider2D>();
+        if (cc == null) return;
+
+        Vector2 topPoint = new Vector2(cc.bounds.center.x, cc.bounds.max.y - 0.1f);
+        Vector2 middlePoint = cc.bounds.center;
+        Vector2 bottomPoint = new Vector2(cc.bounds.center.x, cc.bounds.min.y + 0.1f);
+
+        // Check Left - Use wallMask
+        RaycastHit2D leftTop = Physics2D.Raycast(topPoint, Vector2.left, wallCheckDistance, wallMask);
+        RaycastHit2D leftMiddle = Physics2D.Raycast(middlePoint, Vector2.left, wallCheckDistance, wallMask);
+        RaycastHit2D leftBottom = Physics2D.Raycast(bottomPoint, Vector2.left, wallCheckDistance, wallMask);
+        
+        wallOnLeft = leftTop.collider != null || leftMiddle.collider != null || leftBottom.collider != null;
+
+        // Check Right - Use wallMask
+        RaycastHit2D rightTop = Physics2D.Raycast(topPoint, Vector2.right, wallCheckDistance, wallMask);
+        RaycastHit2D rightMiddle = Physics2D.Raycast(middlePoint, Vector2.right, wallCheckDistance, wallMask);
+        RaycastHit2D rightBottom = Physics2D.Raycast(bottomPoint, Vector2.right, wallCheckDistance, wallMask);
+        
+        wallOnRight = rightTop.collider != null || rightMiddle.collider != null || rightBottom.collider != null;
+
+        // Determine if we should be climbing
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+
+        bool pressingAgainstWall = (wallOnLeft && horizontalInput < -0.1f) || (wallOnRight && horizontalInput > 0.1f);
+        bool pressingUp = verticalInput > 0.1f;
+        
+        if (wallOnLeft || wallOnRight)
+        {
+             if (pressingAgainstWall || pressingUp || isWallClimbing) 
+             {
+                 if(!isWallClimbing) Debug.Log("Started Wall Climbing");
+                 isWallClimbing = true;
+             }
+        }
+        else
+        {
+            if(isWallClimbing) Debug.Log("Stopped Wall Climbing - No Wall");
+            isWallClimbing = false;
+        }
+        
+        // Jump off
+        if (Input.GetKeyDown(KeyCode.Space) && isWallClimbing)
+        {
+            WallJump();
+        }
+    }
+
+    void HandleWallClimbing()
+    {
+        if (isWallClimbing)
+        {
+            if(playerController != null && playerController.enabled)
+                playerController.enabled = false;
+
+            rb.gravityScale = 0; 
+            
+            float vInput = Input.GetAxis("Vertical");
+            
+            float targetY = vInput * wallClimbSpeed;
+            
+            rb.linearVelocity = new Vector2(0, targetY);
+        }
+        else
+        {
+            if(playerController != null && !playerController.enabled)
+                playerController.enabled = true;
+                
+            rb.gravityScale = defaultGravity;
+        }
+    }
+
+    void WallJump()
+    {
+        isWallClimbing = false;
+        float dir = wallOnLeft ? 1f : -1f;
+        rb.linearVelocity = new Vector2(dir * wallJumpForce, wallJumpForce); 
+        // Force un-stick by not re-entering immediately next frame if user holds keys?
+        // With current CheckForWall logic, if wallOnLeft is true and they press 'A', it might re-stick.
+        // Usually WallJump implies moving AWAY from wall, so 'A' wouldn't be pressed if jumping Right.
+    }
+
+    void OnDrawGizmos()
+    {
+        // Try to get collider even in Editor mode
+        CapsuleCollider2D cc = GetComponentInChildren<CapsuleCollider2D>();
+        if (cc == null) return;
+
+        Vector2 topPoint = new Vector2(cc.bounds.center.x, cc.bounds.max.y - 0.1f);
+        Vector2 middlePoint = cc.bounds.center;
+        Vector2 bottomPoint = new Vector2(cc.bounds.center.x, cc.bounds.min.y + 0.1f);
+
+        // Draw Left
+        Gizmos.color = wallOnLeft ? Color.green : Color.red;
+        Gizmos.DrawLine(topPoint, topPoint + Vector2.left * wallCheckDistance);
+        Gizmos.DrawLine(middlePoint, middlePoint + Vector2.left * wallCheckDistance);
+        Gizmos.DrawLine(bottomPoint, bottomPoint + Vector2.left * wallCheckDistance);
+        
+        // Add solid indicators
+        Gizmos.DrawSphere(topPoint + Vector2.left * wallCheckDistance, 0.05f);
+
+        // Draw Right
+        Gizmos.color = wallOnRight ? Color.green : Color.red;
+        Gizmos.DrawLine(topPoint, topPoint + Vector2.right * wallCheckDistance);
+        Gizmos.DrawLine(middlePoint, middlePoint + Vector2.right * wallCheckDistance);
+        Gizmos.DrawLine(bottomPoint, bottomPoint + Vector2.right * wallCheckDistance);
+        
+         // Add solid indicators
+        Gizmos.DrawSphere(topPoint + Vector2.right * wallCheckDistance, 0.05f);
     }
 }

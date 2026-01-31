@@ -294,15 +294,18 @@ public class UpperBodyController : MonoBehaviour
 
             if (closestHit.collider != null)
             {
+                 // We need to adjust the TRANSFORM position based on where the collider center is
+                 Vector2 currentCenter = cc.bounds.center;
+                 
                  float offset = cc.bounds.extents.x + 0.02f; // Half width + small buffer
                  float dir = wallOnLeft ? 1f : -1f;
-                 Vector2 snapPos = closestHit.point;
-                 snapPos.x += dir * offset;
                  
-                 // We need to adjust the TRANSFORM position based on where the collider center is
-                 // transform.position might not be center.
-                 // snapPos is where the center of the collider SHOULD be.
-                 Vector2 currentCenter = cc.bounds.center;
+                 // Calculate target X based on wall hit
+                 float targetX = closestHit.point.x + (dir * offset);
+                 
+                 // Creating snap position: Target X, but Current Y (don't move up/down)
+                 Vector2 snapPos = new Vector2(targetX, currentCenter.y);
+                 
                  Vector3 shift = snapPos - currentCenter;
                  
                  transform.position += shift;

@@ -82,6 +82,7 @@ public class UpperBodyController : MonoBehaviour
 
         HandleInput();
         CheckJumpInput(); // Replaced CheckForWall
+        CheckWallExit();  // Raycast exit check
 
         if (isGrappling)
         {
@@ -287,20 +288,47 @@ public class UpperBodyController : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    // Raycast Exit Logic: If we are climbing, check if we are still close to the wall.
+    // If rays fail, it means we moved away or ran out of wall -> Exit climbing.
+    void CheckWallExit()
     {
-        // User requested to remove OnCollisionExit logic.
-        // State remains sticky until Jump (Space).
-        /*
-        if (((1 << collision.gameObject.layer) & wallMask) != 0)
+        if (!isWallClimbing) return;
+        
+        CapsuleCollider2D cc = GetComponentInChildren<CapsuleCollider2D>();
+        if (cc == null) return;
+
+        Vector2 topPoint = new Vector2(cc.bounds.center.x, cc.bounds.max.y - 0.1f);
+        Vector2 middlePoint = cc.bounds.center;
+        Vector2 bottomPoint = new Vector2(cc.bounds.center.x, cc.bounds.min.y + 0.1f);
+
+        bool stillOnWall = false;
+
+        if (wallOnLeft)
         {
-            // Simple Exit logic
-            if(isWallClimbing) Debug.Log("Left Wall (Collision Exit)");
+            RaycastHit2D leftTop = Physics2D.Raycast(topPoint, Vector2.left, wallCheckDistance, wallMask);
+            RaycastHit2D leftMiddle = Physics2D.Raycast(middlePoint, Vector2.left, wallCheckDistance, wallMask);
+            RaycastHit2D leftBottom = Physics2D.Raycast(bottomPoint, Vector2.left, wallCheckDistance, wallMask);
+            
+            if (leftTop.collider != null || leftMiddle.collider != null || leftBottom.collider != null)
+                stillOnWall = true;
+        }
+        else if (wallOnRight)
+        {
+             RaycastHit2D rightTop = Physics2D.Raycast(topPoint, Vector2.right, wallCheckDistance, wallMask);
+             RaycastHit2D rightMiddle = Physics2D.Raycast(middlePoint, Vector2.right, wallCheckDistance, wallMask);
+             RaycastHit2D rightBottom = Physics2D.Raycast(bottomPoint, Vector2.right, wallCheckDistance, wallMask);
+             
+             if (rightTop.collider != null || rightMiddle.collider != null || rightBottom.collider != null)
+                stillOnWall = true;
+        }
+
+        if (!stillOnWall)
+        {
+            Debug.Log("Raycast Exit: Wall Lost");
             isWallClimbing = false;
             wallOnLeft = false;
             wallOnRight = false;
         }
-        */
     }
     
     // Manual CheckForWall removed, checking jump input in Update instead

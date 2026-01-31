@@ -54,6 +54,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool allowWallJump = true;
     [SerializeField] private bool allowWallClimb = true;
     [SerializeField] private bool allowWallSlide = true;
+    [SerializeField] private bool allowWallStick = true; // New separate toggle
 
     [Header("Double Jump Settings")]
     // [SerializeField] bool enableDoubleJump = true; // Refactored to allowDoubleJump
@@ -82,6 +83,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float wallClimbForceV = 30f;
     [Range(10f, 90f)]
     [SerializeField] float wallClimbAngle = 60f;
+
+    [Header("Wall Stick Settings")]
+    [SerializeField] float wallClimbSpeed = 5f;
+    [SerializeField] float wallStickCooldownDuration = 0.2f; 
+    [SerializeField] float wallStickJumpForce = 10f; // New variable for Stick Jump
+    private float currentWallStickCooldown;
+    private bool isWallClimbing;
+
 
     [Header("Simple Dash Settings")]
     [SerializeField] private float dashSpeed = 25f;
@@ -136,10 +145,14 @@ public class PlayerController : MonoBehaviour
     private int dashesUsed;
     private bool shouldDash;
 
+    private float defaultGravity;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        defaultGravity = rb.gravityScale;
         cc = GetComponent<CapsuleCollider2D>();
+
         sr = GetComponent<SpriteRenderer>();
 
         originalScale = transform.localScale;
@@ -168,7 +181,7 @@ public class PlayerController : MonoBehaviour
         gameTime += Time.deltaTime;
 
         UpdateDashCooldown();
-
+        UpdateWallStickCooldown();
     }
 
     void FixedUpdate()
@@ -177,15 +190,20 @@ public class PlayerController : MonoBehaviour
 
         CheckIfGrounded();
         CheckWallDetection();
-        HandleWallSliding();
+
+        if (isWallClimbing)
+        {
+            HandleWallClimbing();
+        }
+        else
+        {
+            HandleWallSliding();
+            HandleMovenment();
+            ApplyGravity();
+        }
+
         HandleJumping();
-        HandleMovenment();
-        ApplyGravity();
-
         HandleDashing();
-
-
-
     }
 
     public void SetInput(FrameInput input)
@@ -308,7 +326,13 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        if (CanDoWallJump())
+
+        // New Priority: Stick Jump
+        if (isWallClimbing)
+        {
+            WallStickJump();
+        }
+        else if (CanDoWallJump())
         {
             DoWallJump();
         }
@@ -579,6 +603,11 @@ public class PlayerController : MonoBehaviour
         currentlyWallJumping = true;
         hasWallJumped = true;
         isSlidingOnWall = false;
+        
+        // Wall Stick Break
+        isWallClimbing = false;
+        currentWallStickCooldown = wallStickCooldownDuration; // Set cooldown
+        
         currentlyJumping = true;
         jumpButtonWasReleased = false;
 
@@ -685,6 +714,134 @@ public class PlayerController : MonoBehaviour
         float momentum = 0.3f;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x * momentum, rb.linearVelocity.y);
 
+    }
+
+    // Wall Stick Logic
+
+    private void UpdateWallStickCooldown()
+    {
+        if (currentWallStickCooldown > 0)
+            currentWallStickCooldown -= Time.deltaTime;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check Layer
+        if (((1 << collision.gameObject.layer) & wallLayer) != 0)
+        {
+            // Check Cooldown
+            if (currentWallStickCooldown > 0) return;
+
+            Vector2 normal = collision.GetContact(0).normal;
+            
+            bool hitWallOnLeft = normal.x > 0.5f;
+            bool hitWallOnRight = normal.x < -0.5f;
+
+            if (hitWallOnLeft || hitWallOnRight)
+            {
+                if (!isWallClimbing)
+                {
+                    // Only stick if we have the ability
+                    if (!allowWallStick) return; // REPLACED allowWallClimb with allowWallStick
+
+                    Debug.Log("Wall Hit: Sticking");
+                    isWallClimbing = true;
+                    
+                    // Snap Logic
+                    if(cc)
+                    {
+                        float offset = cc.bounds.extents.x + 0.02f;
+                        float dir = hitWallOnLeft ? 1f : -1f;
+                        float targetX = collision.GetContact(0).point.x + (dir * offset);
+                        StartCoroutine(SmoothSnapToWall(targetX, 0.1f));
+                    }
+                    
+                    // Reset vertical velocity usually
+                    currentVelocity.y = 0;
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); 
+                }
+            }
+        }
+    }
+
+    System.Collections.IEnumerator SmoothSnapToWall(float targetX, float duration)
+    {
+        float elapsed = 0f;
+        float startX = transform.position.x;
+        
+        while (elapsed < duration)
+        {
+            if (!isWallClimbing) yield break;
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            t = t * t * (3f - 2f * t); // Smooth step
+            
+            float newX = Mathf.Lerp(startX, targetX, t);
+            transform.position = new Vector3(newX, transform.position.y, transform.position.z);
+            yield return null;
+        }
+        
+        if (isWallClimbing)
+        {
+            transform.position = new Vector3(targetX, transform.position.y, transform.position.z);
+        }
+    }
+
+    void HandleWallClimbing()
+    {
+        if (isWallClimbing)
+        {
+            rb.gravityScale = 0; // Disable gravity while sticking
+
+            float vInput = currentInput.Move.y;
+            float targetY = vInput * wallClimbSpeed;
+            
+            // Explicitly overwrite velocity for Stick mode
+            currentVelocity = new Vector2(0, targetY);
+            
+            CheckWallExit();
+        }
+        else
+        {
+            rb.gravityScale = defaultGravity; // Restore gravity if not climbing
+        }
+    }
+
+    void WallStickJump()
+    {
+        // Logic copied from UpperBodyController.WallJump
+        Debug.Log("Wall Stick Jump");
+        isWallClimbing = false;
+        
+        rb.gravityScale = defaultGravity; // Restore gravity
+
+        // Break stick state
+        // currentWallStickCooldown = wallStickCooldownDuration; // REMOVED to match UpperBodyController (it never set this)
+
+        float dir = wallOnLeft ? 1f : -1f;
+        
+        currentVelocity = new Vector2(dir * wallStickJumpForce, wallStickJumpForce); 
+        rb.linearVelocity = currentVelocity; 
+        
+        TurnCharacter(dir > 0);
+
+        currentlyJumping = true;
+        jumpButtonWasReleased = false;
+        canUseJumpBuffer = false;
+        canUseCoyote = false;
+    }
+
+    void CheckWallExit()
+    {
+        if (!isWallClimbing) return;
+        
+        if (!wallOnLeft && !wallOnRight)
+        {
+             Debug.Log("Raycast Exit: Wall Lost");
+             isWallClimbing = false;
+             rb.gravityScale = defaultGravity; // Restore gravity
+        }
     }
 
     void OnDrawGizmos()

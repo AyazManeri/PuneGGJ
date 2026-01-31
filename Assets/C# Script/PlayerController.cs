@@ -186,7 +186,14 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        ApplyVelocityToRigidbody();
+        // 1. If we want to disable gravity (e.g. Grappling), we usually want to
+        // respect external forces. Sync currentVelocity with Rigidbody to not fight it.
+        if (disableGravity)
+        {
+            currentVelocity = rb.linearVelocity;
+        }
+
+        // ApplyVelocityToRigidbody(); // MOVED TO END
 
         CheckIfGrounded();
         CheckWallDetection();
@@ -204,6 +211,8 @@ public class PlayerController : MonoBehaviour
 
         HandleJumping();
         HandleDashing();
+        
+        ApplyVelocityToRigidbody(); // Applied AFTER physics/logic calculation
     }
 
     public void SetInput(FrameInput input)
@@ -436,13 +445,16 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
     private void ApplyGravity()
     {
+        // If DisableGravity is on, DO NOT apply manual gravity.
+        if (disableGravity) return;
+
         if (isGrounded)
         {
             currentVelocity.y = Mathf.Max(currentVelocity.y, groundingForce);
         }
-
         else if (isSlidingOnWall)
         {
             return;
@@ -451,7 +463,6 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-
         else
         {
             if (jumpType == JumpType.variableJump && currentlyJumping && jumpButtonWasReleased && currentVelocity.y > 0)
@@ -472,8 +483,6 @@ public class PlayerController : MonoBehaviour
             }
 
             currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, -maxFallSpeed, gravityMult * fallAcceleration * Time.fixedDeltaTime);
-
-
         }
     }
     void ApplyVelocityToRigidbody()
@@ -792,8 +801,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isWallClimbing)
         {
-            rb.gravityScale = 0; // Disable gravity while sticking
-
             float vInput = currentInput.Move.y;
             float targetY = vInput * wallClimbSpeed;
             
@@ -801,10 +808,6 @@ public class PlayerController : MonoBehaviour
             currentVelocity = new Vector2(0, targetY);
             
             CheckWallExit();
-        }
-        else
-        {
-            rb.gravityScale = defaultGravity; // Restore gravity if not climbing
         }
     }
 
@@ -814,8 +817,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Wall Stick Jump");
         isWallClimbing = false;
         
-        rb.gravityScale = defaultGravity; // Restore gravity
-
         // Break stick state
         // currentWallStickCooldown = wallStickCooldownDuration; // REMOVED to match UpperBodyController (it never set this)
 
@@ -840,9 +841,15 @@ public class PlayerController : MonoBehaviour
         {
              Debug.Log("Raycast Exit: Wall Lost");
              isWallClimbing = false;
-             rb.gravityScale = defaultGravity; // Restore gravity
         }
     }
+
+    // Grapple Support
+    [Header("Grapple Settings")]
+    public bool disableGravity; // Renamed from isGrappling
+
+    // Removed SetGrapplingState method to simplify as requested. 
+    // User can toggle disableGravity directly.
 
     void OnDrawGizmos()
     {

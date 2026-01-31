@@ -34,6 +34,7 @@ public class UpperBodyController : MonoBehaviour
     private bool wallOnRight;
     private float defaultGravity;
     private PlayerController playerController;
+    private bool wasTouchingWall;
 
     private struct RopePoint
     {
@@ -258,27 +259,78 @@ public class UpperBodyController : MonoBehaviour
         
         wallOnRight = rightTop.collider != null || rightMiddle.collider != null || rightBottom.collider != null;
 
-        // Determine if we should be climbing
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
+        bool isTouchingWall = wallOnLeft || wallOnRight;
 
-        bool pressingAgainstWall = (wallOnLeft && horizontalInput < -0.1f) || (wallOnRight && horizontalInput > 0.1f);
-        bool pressingUp = verticalInput > 0.1f;
-        
-        if (wallOnLeft || wallOnRight)
+        // Event-Based Logic:
+        // 1. Enter Wall Connection
+        if (isTouchingWall && !wasTouchingWall)
         {
-             if (pressingAgainstWall || pressingUp || isWallClimbing) 
-             {
-                 if(!isWallClimbing) Debug.Log("Started Wall Climbing");
-                 isWallClimbing = true;
-             }
+            Debug.Log("Wall Detected: Sticking");
+            isWallClimbing = true;
+            
+            // SNAP TO WALL
+            // Find the closest hit to snap validly
+            RaycastHit2D closestHit = new RaycastHit2D();
+            float closeDist = float.MaxValue;
+            
+            // Helper to check hits
+            void CheckHit(RaycastHit2D h) 
+            {
+               if(h.collider != null && h.distance < closeDist) 
+               {
+                   closeDist = h.distance;
+                   closestHit = h;
+               }
+            }
+
+            if (wallOnLeft)
+            {
+                CheckHit(leftTop); CheckHit(leftMiddle); CheckHit(leftBottom);
+            }
+            else
+            {
+                CheckHit(rightTop); CheckHit(rightMiddle); CheckHit(rightBottom);
+            }
+
+            if (closestHit.collider != null)
+            {
+                 float offset = cc.bounds.extents.x + 0.02f; // Half width + small buffer
+                 float dir = wallOnLeft ? 1f : -1f;
+                 Vector2 snapPos = closestHit.point;
+                 snapPos.x += dir * offset;
+                 
+                 // We need to adjust the TRANSFORM position based on where the collider center is
+                 // transform.position might not be center.
+                 // snapPos is where the center of the collider SHOULD be.
+                 Vector2 currentCenter = cc.bounds.center;
+                 Vector3 shift = snapPos - currentCenter;
+                 
+                 transform.position += shift;
+                 
+                 // Kill horizontal velocity immediately
+                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            }
         }
-        else
+
+        // 2. Stay on Wall (Optional: Check manual release?) 
+        // Currently, we just keep isWallClimbing true unless something sets it false.
+        
+        // 3. Exit Wall Connection
+        if (!isTouchingWall && wasTouchingWall)
         {
-            if(isWallClimbing) Debug.Log("Stopped Wall Climbing - No Wall");
+            Debug.Log("Left Wall");
             isWallClimbing = false;
         }
+
+        // Update state for next frame
+        wasTouchingWall = isTouchingWall;
         
+        // Safety: If somehow we are climbing but not touching (e.g. slight gap), unstick? 
+        // The Exit logic covers it, but 'isTouchingWall' generally handles it.
+        // However, if we jumped (isWallClimbing set false), but are still touching, we don't want to re-enter.
+        // The above "Enter" logic (isTouchingWall && !wasTouchingWall) handles that perfectly.
+        // It won't fire again until we leave and return.
+
         // Jump off
         if (Input.GetKeyDown(KeyCode.Space) && isWallClimbing)
         {

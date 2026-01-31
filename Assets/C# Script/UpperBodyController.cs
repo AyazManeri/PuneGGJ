@@ -8,11 +8,14 @@ public class UpperBodyController : MonoBehaviour
     public LineRenderer lineRenderer;
     public LayerMask grappleMask;
     
+    [Tooltip("The max length of the rope. If you grapple something further than this, you will be pulled in.")]
+    public float maxRopeDistance = 20f; 
+
     [Header("Physics Settings")]
-    public float climbSpeed = 5f;     // How fast you retract/extend
-    public float swingForce = 40f;    // Force pulling you towards the anchor
-    public float damper = 10f;        // Resistance to stop the "springy" bouncing
-    public float wrapOffset = 0.1f;   // Offset to prevent rope clipping into corners
+    public float climbSpeed = 5f;     
+    public float swingForce = 40f;    
+    public float damper = 10f;        
+    public float wrapOffset = 0.1f;   
 
     private Rigidbody2D rb;
     private List<RopePoint> ropePoints = new List<RopePoint>();
@@ -60,6 +63,7 @@ public class UpperBodyController : MonoBehaviour
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = (mousePos - (Vector2)transform.position).normalized;
             
+            // Raycast is Infinite so you can hit far objects
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, Mathf.Infinity, grappleMask);
 
             if (hit.collider != null)
@@ -67,7 +71,12 @@ public class UpperBodyController : MonoBehaviour
                 isGrappling = true;
                 ropePoints.Clear();
                 ropePoints.Add(new RopePoint(hit.point, false)); 
-                totalRopeLength = Vector2.Distance(transform.position, hit.point);
+                
+                float actualDistance = Vector2.Distance(transform.position, hit.point);
+
+                // CLAMP LOGIC: If actual distance > max, set rope length to max (causes immediate pull)
+                // Otherwise, just use the actual distance.
+                totalRopeLength = Mathf.Min(actualDistance, maxRopeDistance);
             }
         }
 
@@ -85,7 +94,9 @@ public class UpperBodyController : MonoBehaviour
             if (verticalInput != 0)
             {
                 totalRopeLength -= verticalInput * climbSpeed * Time.deltaTime;
-                totalRopeLength = Mathf.Max(totalRopeLength, 1f); // Min length 1 unit
+                
+                // Clamp length: Minimum 1.0f, Maximum is maxRopeDistance
+                totalRopeLength = Mathf.Clamp(totalRopeLength, 1f, maxRopeDistance);
             }
         }
     }
@@ -97,16 +108,12 @@ public class UpperBodyController : MonoBehaviour
         Vector2 playerPos = transform.position;
         Vector2 lastAnchor = ropePoints[ropePoints.Count - 1].position;
         
-        // Raycast to check if line of sight is blocked
         RaycastHit2D hit = Physics2D.Linecast(playerPos, lastAnchor, grappleMask);
 
-        // If we hit an obstacle that isn't the current anchor point
         if (hit.collider != null && Vector2.Distance(hit.point, lastAnchor) > 0.1f)
         {
-            // Offset the point slightly to avoid sticking inside geometry
             Vector2 newPointPos = hit.point + (hit.normal * wrapOffset);
 
-            // Calculate Winding Direction (Clockwise or Anti-Clockwise)
             Vector2 previousSegment = lastAnchor - playerPos; 
             if (ropePoints.Count > 1)
             {
@@ -129,14 +136,12 @@ public class UpperBodyController : MonoBehaviour
         Vector2 currentAnchor = ropePoints[ropePoints.Count - 1].position;
         Vector2 previousAnchor = ropePoints[ropePoints.Count - 2].position;
 
-        // Check if we have swung back past the wrapping angle
         Vector2 segmentVector = currentAnchor - previousAnchor;
         Vector2 playerVector = playerPos - currentAnchor;
         
         float cross = (segmentVector.x * playerVector.y) - (segmentVector.y * playerVector.x);
         bool currentCW = cross < 0;
 
-        // If winding direction flipped compared to when we wrapped, remove the point
         if (currentCW != ropePoints[ropePoints.Count - 1].isClockwise)
         {
             ropePoints.RemoveAt(ropePoints.Count - 1);
@@ -149,7 +154,6 @@ public class UpperBodyController : MonoBehaviour
         Vector2 direction = (anchor - (Vector2)transform.position).normalized;
         float currentDistance = Vector2.Distance(transform.position, anchor);
 
-        // Calculate active rope length (Total - wrapped segments)
         float staticLength = 0;
         for(int i=0; i < ropePoints.Count - 1; i++)
         {
@@ -157,19 +161,16 @@ public class UpperBodyController : MonoBehaviour
         }
         float availableLength = totalRopeLength - staticLength;
 
-        // Apply forces only if rope is fully stretched
+        // If we are further than the allowed length (e.g. we hit something far away but clamped length)
         if (currentDistance > availableLength)
         {
-            // A. Spring Force (Hooke's Law): Pulls you up
             float stretch = currentDistance - availableLength;
             float springForceMagnitude = stretch * swingForce;
 
-            // B. Damper Force: Resists velocity ALONG the rope to stop bouncing
-            // Note: Use 'rb.linearVelocity' instead of 'velocity' if using Unity 6+
+            // Note: Use 'rb.velocity' if on Unity 2022 or older. 'rb.linearVelocity' for Unity 6.
             float velocityAlongRope = Vector2.Dot(rb.linearVelocity, direction);
             float damperForceMagnitude = velocityAlongRope * damper;
 
-            // Combine forces
             float totalForce = springForceMagnitude - damperForceMagnitude;
 
             rb.AddForce(direction * totalForce);

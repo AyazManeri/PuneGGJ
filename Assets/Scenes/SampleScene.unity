@@ -2075,7 +2075,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!50 &535086197
 Rigidbody2D:
   serializedVersion: 5
@@ -2091,7 +2091,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2195,7 +2195,7 @@ MonoBehaviour:
   groundingForce: -1
   groundDistance: 0.05
   jumpType: 1
-  jumpForce: 30
+  jumpForce: 15
   maxFallSpeed: 40
   fallAcceleration: 70
   coyoteTime: 0.2
@@ -2206,23 +2206,23 @@ MonoBehaviour:
   allowWallJump: 0
   allowWallClimb: 0
   allowWallSlide: 0
-  allowWallStick: 1
+  allowWallStick: 0
   maxAirJumps: 1
   airJumpPower: 32
   airJumpsResetVelocity: 1
   airJumpVelocityResetThreshold: -5
   wallLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   WallCheckDistance: 0.7
   wallSlideSpeed: 0.5
   wallJumpAngle: 60
   wallJumpTime: 0.2
   wallJumpInputBuffer: 0.1
-  enableWallJumpChaining: 1
+  enableWallJumpChaining: 0
   canDoDoubleJumpFromWall: 0
-  wallClimbForceH: 30
-  wallClimbForceV: 30
+  wallClimbForceH: 0
+  wallClimbForceV: 0
   wallClimbAngle: 60
   wallClimbSpeed: 5
   wallStickCooldownDuration: 0.2
@@ -2232,7 +2232,7 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
-  disableGravity: 0
+  disableGravity: 1
 --- !u!1 &535787837
 GameObject:
   m_ObjectHideFlags: 0
@@ -5294,7 +5294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!70 &1636664585
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

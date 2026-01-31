@@ -118,12 +118,12 @@ public class UpperBodyController : MonoBehaviour
     {
         if (isGrappling)
         {
-            playerController.enabled = false;
+            if (playerController != null) playerController.enabled = false;
             ApplyRopePhysics();
         }
         else
         {
-            playerController.enabled = true;
+            if (playerController != null) playerController.enabled = true;
         }
         
         HandleWallClimbing(); // Apply climbing physics

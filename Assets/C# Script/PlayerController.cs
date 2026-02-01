@@ -227,6 +227,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("isWalking", false);
+            animator.SetBool("isJumping", false);
+            animator.speed = baseAnimationSpeed; // Reset speed so other states don't get Stuck in Slow-Mo
+        }
+    }
+
     void FixedUpdate()
     {
         // 1. If we want to disable gravity (e.g. Grappling), we usually want to

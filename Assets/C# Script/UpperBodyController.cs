@@ -126,6 +126,12 @@ public class UpperBodyController : MonoBehaviour
         // Immediate state updates
         animator.SetBool("isHolding", isWallClimbing);
         animator.SetBool("isSwing", isGrappling);
+        
+        // Ensure speed is normal (in case PlayerController left it slow)
+        if (isWallClimbing || isGrappling)
+        {
+            animator.speed = 1f;
+        }
     }
 
     void FixedUpdate()

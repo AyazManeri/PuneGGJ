@@ -2844,7 +2844,7 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
-  animator: {fileID: 0}
+  animator: {fileID: 1885795811}
   syncAnimationSpeed: 1
   baseAnimationSpeed: 1
   disableGravity: 1
@@ -5286,7 +5286,7 @@ MonoBehaviour:
   swingForce: 100
   damper: 20
   wrapOffset: 0.1
-  animator: {fileID: 0}
+  animator: {fileID: 770434943}
   wallMask:
     serializedVersion: 2
     m_Bits: 64
@@ -7907,7 +7907,7 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
-  animator: {fileID: 0}
+  animator: {fileID: 728779998}
   syncAnimationSpeed: 1
   baseAnimationSpeed: 1
   disableGravity: 1

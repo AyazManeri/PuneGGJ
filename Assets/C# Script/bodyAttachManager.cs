@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class bodyAttachManager : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class bodyAttachManager : MonoBehaviour
     
     [Header("Trigger Settings")]
     public LayerMask targetLayer;
+
+    [Header("UI Indicators")]
+    public Image upperBodyIndicator;
+    public Image lowerBodyIndicator;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -37,5 +42,13 @@ public class bodyAttachManager : MonoBehaviour
         {
             Instantiate(attachVFX, transform.position, Quaternion.identity);
         }
+
+        UpdateUIIndicators();
+    }
+
+    void UpdateUIIndicators()
+    {
+        lowerBodyIndicator.color = new Color(1f, 1f, 1f, 1f);
+        upperBodyIndicator.color = new Color(1f, 1f, 1f, 1f);
     }
 }

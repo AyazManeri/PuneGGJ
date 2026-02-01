@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 
 public class bodySwitcher : MonoBehaviour
@@ -6,6 +7,10 @@ public class bodySwitcher : MonoBehaviour
     [Header("Body Controller References")]
     public PlayerController lowerBodyController;
     public UpperBodyController upperBodyController;
+
+    [Header("UI Indicators")]
+    public Image upperBodyIndicator;
+    public Image lowerBodyIndicator;
 
     [Header("Switch Settings")]
     public KeyCode switchKey = KeyCode.Tab;
@@ -87,6 +92,8 @@ public class bodySwitcher : MonoBehaviour
         
         if (upperBodyController != null)
             upperBodyController.enabled = false;
+        
+        UpdateUIIndicators();
     }
 
     void EnableUpperBody()
@@ -96,6 +103,8 @@ public class bodySwitcher : MonoBehaviour
         
         if (lowerBodyController != null)
             lowerBodyController.enabled = false;
+        
+        UpdateUIIndicators();
     }
 
     // Public method to get current mode (for UI or other scripts)
@@ -133,6 +142,31 @@ public class bodySwitcher : MonoBehaviour
             }
 
             OnBodyModeChanged?.Invoke(currentBodyMode);
+        }
+    }
+
+    // Update UI indicator colors based on active body mode
+    void UpdateUIIndicators()
+    {
+        if (currentBodyMode == BodyMode.LowerBody)
+        {
+            // Lower body is active - full white
+            if (lowerBodyIndicator != null)
+                lowerBodyIndicator.color = new Color(1f, 1f, 1f, 1f);
+            
+            // Upper body is inactive - dulled (50% opacity)
+            if (upperBodyIndicator != null)
+                upperBodyIndicator.color = new Color(1f, .8f, .8f, 0.4f);
+        }
+        else // UpperBody mode
+        {
+            // Upper body is active - full white
+            if (upperBodyIndicator != null)
+                upperBodyIndicator.color = new Color(1f, 1f, 1f, 1f);
+            
+            // Lower body is inactive - dulled (50% opacity)
+            if (lowerBodyIndicator != null)
+                lowerBodyIndicator.color = new Color(1f, .8f, .8f, 0.4f);
         }
     }
 }

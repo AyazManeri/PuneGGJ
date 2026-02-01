@@ -124,9 +124,25 @@ public class UpperBodyController : MonoBehaviour
     {
         if (animator == null) return;
 
-        // Immediate state updates
-        animator.SetBool("isHolding", isWallClimbing);
-        animator.SetBool("isSwing", isGrappling);
+        // When climbing, disable all other animation bools and only keep climb active
+        if (isWallClimbing)
+        {
+            // Force immediate transition to climb animation, bypassing all transition conditions
+            if (!wasTouchingWall)
+            {
+                animator.Play("Climb", -1, 0f); // Play climb animation immediately from the start
+            }
+            
+            animator.SetBool("isHolding", true);
+            animator.SetBool("isSwing", false);
+            // Add any other animation bools here and set them to false
+        }
+        else
+        {
+            // Normal state updates when not climbing
+            animator.SetBool("isHolding", false);
+            animator.SetBool("isSwing", isGrappling);
+        }
 
         // Flip based on direction of travel - only when NOT grappling or when grappling just started
         if (!isGrappling || !grappleDirectionSet)

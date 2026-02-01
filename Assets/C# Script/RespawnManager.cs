@@ -1,9 +1,12 @@
 using UnityEngine;
+using System.Collections;
 
 public class RespawnManager : MonoBehaviour
 {
+    [SerializeField] private float respawnDelay = 1f;
+    [SerializeField] private Transform playerTransform;
+
     private Transform currentCheckpoint;
-    private Transform playerTransform;
 
     private void OnEnable()
     {
@@ -17,23 +20,30 @@ public class RespawnManager : MonoBehaviour
 
     private void Start()
     {
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-
-        currentCheckpoint = playerTransform;
+        if (playerTransform != null)
+        {
+            currentCheckpoint = playerTransform;
+        }
     }
 
     private void UpdateCheckpoint(Transform newCheckpoint)
     {
         currentCheckpoint = newCheckpoint;
-       
     }
 
     public void RespawnPlayer()
     {
+        StartCoroutine(RespawnWithDelay());
+    }
+
+    private IEnumerator RespawnWithDelay()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+
         if (currentCheckpoint != null && playerTransform != null)
         {
             playerTransform.position = currentCheckpoint.position;
-
+            playerTransform.gameObject.SetActive(true);
         }
     }
 }

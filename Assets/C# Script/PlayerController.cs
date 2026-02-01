@@ -208,23 +208,6 @@ public class PlayerController : MonoBehaviour
         // Use physics state for accuracy
         bool isJumping = !isGrounded; 
         animator.SetBool("isJumping", isJumping);
-
-        // 3. Speed Matching
-        if (syncAnimationSpeed && animator.speed != 0) // Check != 0 to prevent divide by zero issues if set externally
-        {
-            float targetSpeed = baseAnimationSpeed;
-
-            if (isWalking && isGrounded)
-            {
-                // Normalize speed based on MoveSpeed
-                // Use Max(0.5f, ...) to ensure feet move even when starting from standstill (acceleration)
-                float normalizedSpeed = Mathf.Abs(rb.linearVelocity.x) / moveSpeed;
-                targetSpeed = Mathf.Max(0.5f, normalizedSpeed) * baseAnimationSpeed;
-            }
-
-            // Smoothly interpolate to target speed to prevent jitter
-            animator.speed = Mathf.Lerp(animator.speed, targetSpeed, Time.deltaTime * 10f);
-        }
     }
 
     private void OnDisable()

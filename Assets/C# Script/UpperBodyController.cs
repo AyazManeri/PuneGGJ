@@ -132,6 +132,16 @@ public class UpperBodyController : MonoBehaviour
         {
             animator.speed = 1f;
         }
+
+        // Flip based on direction of travel
+        if (rb.linearVelocity.x > 0.1f)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (rb.linearVelocity.x < -0.1f)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
     }
 
     void FixedUpdate()

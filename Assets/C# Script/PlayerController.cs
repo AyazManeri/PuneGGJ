@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Wall Stick Settings")]
     [SerializeField] float wallClimbSpeed = 5f;
-    [SerializeField] float wallStickCooldownDuration = 0.2f; 
+    [SerializeField] float wallStickCooldownDuration = 0.2f;
     [SerializeField] float wallStickJumpForce = 10f; // New variable for Stick Jump
     private float currentWallStickCooldown;
     private bool isWallClimbing;
@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool canDashInAir = true;
     [SerializeField] int maxAirDashes = 1;
 
+   
 
 
     //Component Reference
@@ -155,6 +156,7 @@ public class PlayerController : MonoBehaviour
 
         sr = GetComponent<SpriteRenderer>();
 
+       
         originalScale = transform.localScale;
 
         oldQuerySetting = Physics2D.queriesStartInColliders;
@@ -175,6 +177,8 @@ public class PlayerController : MonoBehaviour
             Debug.LogWarning("No SpriteRenderer found so using default Scale");
             flipType = FlipType.Scale;
         }
+
+      
     }
     private void Update()
     {
@@ -182,6 +186,7 @@ public class PlayerController : MonoBehaviour
 
         UpdateDashCooldown();
         UpdateWallStickCooldown();
+   
     }
 
     void FixedUpdate()
@@ -211,7 +216,7 @@ public class PlayerController : MonoBehaviour
 
         HandleJumping();
         HandleDashing();
-        
+
         ApplyVelocityToRigidbody(); // Applied AFTER physics/logic calculation
     }
 
@@ -612,11 +617,11 @@ public class PlayerController : MonoBehaviour
         currentlyWallJumping = true;
         hasWallJumped = true;
         isSlidingOnWall = false;
-        
+
         // Wall Stick Break
         isWallClimbing = false;
         currentWallStickCooldown = wallStickCooldownDuration; // Set cooldown
-        
+
         currentlyJumping = true;
         jumpButtonWasReleased = false;
 
@@ -742,7 +747,7 @@ public class PlayerController : MonoBehaviour
             if (currentWallStickCooldown > 0) return;
 
             Vector2 normal = collision.GetContact(0).normal;
-            
+
             bool hitWallOnLeft = normal.x > 0.5f;
             bool hitWallOnRight = normal.x < -0.5f;
 
@@ -755,19 +760,19 @@ public class PlayerController : MonoBehaviour
 
                     Debug.Log("Wall Hit: Sticking");
                     isWallClimbing = true;
-                    
+
                     // Snap Logic
-                    if(cc)
+                    if (cc)
                     {
                         float offset = cc.bounds.extents.x + 0.02f;
                         float dir = hitWallOnLeft ? 1f : -1f;
                         float targetX = collision.GetContact(0).point.x + (dir * offset);
                         StartCoroutine(SmoothSnapToWall(targetX, 0.1f));
                     }
-                    
+
                     // Reset vertical velocity usually
                     currentVelocity.y = 0;
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); 
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
                 }
             }
         }
@@ -777,7 +782,7 @@ public class PlayerController : MonoBehaviour
     {
         float elapsed = 0f;
         float startX = transform.position.x;
-        
+
         while (elapsed < duration)
         {
             if (!isWallClimbing) yield break;
@@ -785,12 +790,12 @@ public class PlayerController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             t = t * t * (3f - 2f * t); // Smooth step
-            
+
             float newX = Mathf.Lerp(startX, targetX, t);
             transform.position = new Vector3(newX, transform.position.y, transform.position.z);
             yield return null;
         }
-        
+
         if (isWallClimbing)
         {
             transform.position = new Vector3(targetX, transform.position.y, transform.position.z);
@@ -803,10 +808,10 @@ public class PlayerController : MonoBehaviour
         {
             float vInput = currentInput.Move.y;
             float targetY = vInput * wallClimbSpeed;
-            
+
             // Explicitly overwrite velocity for Stick mode
             currentVelocity = new Vector2(0, targetY);
-            
+
             CheckWallExit();
         }
     }
@@ -816,15 +821,15 @@ public class PlayerController : MonoBehaviour
         // Logic copied from UpperBodyController.WallJump
         Debug.Log("Wall Stick Jump");
         isWallClimbing = false;
-        
+
         // Break stick state
         // currentWallStickCooldown = wallStickCooldownDuration; // REMOVED to match UpperBodyController (it never set this)
 
         float dir = wallOnLeft ? 1f : -1f;
-        
-        currentVelocity = new Vector2(dir * wallStickJumpForce, wallStickJumpForce); 
-        rb.linearVelocity = currentVelocity; 
-        
+
+        currentVelocity = new Vector2(dir * wallStickJumpForce, wallStickJumpForce);
+        rb.linearVelocity = currentVelocity;
+
         TurnCharacter(dir > 0);
 
         currentlyJumping = true;
@@ -836,11 +841,11 @@ public class PlayerController : MonoBehaviour
     void CheckWallExit()
     {
         if (!isWallClimbing) return;
-        
+
         if (!wallOnLeft && !wallOnRight)
         {
-             Debug.Log("Raycast Exit: Wall Lost");
-             isWallClimbing = false;
+            Debug.Log("Raycast Exit: Wall Lost");
+            isWallClimbing = false;
         }
     }
 
@@ -848,8 +853,8 @@ public class PlayerController : MonoBehaviour
     [Header("Grapple Settings")]
     public bool disableGravity; // Renamed from isGrappling
 
-    // Removed SetGrapplingState method to simplify as requested. 
-    // User can toggle disableGravity directly.
+    // Animation Update Method
+ 
 
     void OnDrawGizmos()
     {

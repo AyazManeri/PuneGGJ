@@ -1,0 +1,795 @@
+fileFormatVersion: 2
+guid: d28588a9a9793044fb7e24fae73d7d75
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1863734322549137519
+    second: spriteSheet Spidy_0
+  - first:
+      213: 6169028279097707274
+    second: spriteSheet Spidy_1
+  - first:
+      213: -1432378162669739244
+    second: spriteSheet Spidy_2
+  - first:
+      213: 6805228718528965550
+    second: spriteSheet Spidy_3
+  - first:
+      213: 4456336799078100476
+    second: spriteSheet Spidy_4
+  - first:
+      213: 966430536728193057
+    second: spriteSheet Spidy_5
+  - first:
+      213: -2040426250982204560
+    second: spriteSheet Spidy_6
+  - first:
+      213: 8563715623364515695
+    second: spriteSheet Spidy_7
+  - first:
+      213: -1261149306958267868
+    second: spriteSheet Spidy_8
+  - first:
+      213: 4372791049172603701
+    second: spriteSheet Spidy_9
+  - first:
+      213: 3711136917344875220
+    second: spriteSheet Spidy_10
+  - first:
+      213: -3246538254657045416
+    second: spriteSheet Spidy_11
+  - first:
+      213: 4589262424860329328
+    second: spriteSheet Spidy_12
+  - first:
+      213: -8586213190914390189
+    second: spriteSheet Spidy_13
+  - first:
+      213: 6989213526818570915
+    second: spriteSheet Spidy_14
+  - first:
+      213: -6845157751021556670
+    second: spriteSheet Spidy_15
+  - first:
+      213: 4112660376850685504
+    second: spriteSheet Spidy_16
+  - first:
+      213: -1594546100040413970
+    second: spriteSheet Spidy_17
+  - first:
+      213: 3826012737836352751
+    second: spriteSheet Spidy_18
+  - first:
+      213: 1338813439924822626
+    second: spriteSheet Spidy_19
+  - first:
+      213: 2922011424722389162
+    second: spriteSheet Spidy_20
+  - first:
+      213: -3041666917613970522
+    second: spriteSheet Spidy_21
+  - first:
+      213: 315767746349906551
+    second: spriteSheet Spidy_22
+  - first:
+      213: 4376030154734166531
+    second: spriteSheet Spidy_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 50
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: spriteSheet Spidy_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 480
+        width: 43
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60ae3bed705dd910800000000000000
+      internalID: 1863734322549137519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_1
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 479
+        width: 42
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0b45f0f88acc9550800000000000000
+      internalID: 6169028279097707274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_2
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 479
+        width: 35
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4132b0e66ab2f1ce0800000000000000
+      internalID: -1432378162669739244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_3
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 479
+        width: 42
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaba43fb677017e50800000000000000
+      internalID: 6805228718528965550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_4
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 479
+        width: 37
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfd2d8445b618dd30800000000000000
+      internalID: 4456336799078100476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_5
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 479
+        width: 37
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12826c9e373796d00800000000000000
+      internalID: 966430536728193057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_6
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 479
+        width: 35
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07bd2d7a223fea3e0800000000000000
+      internalID: -2040426250982204560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_7
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 480
+        width: 43
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f67da18acfd68d670800000000000000
+      internalID: 8563715623364515695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_8
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 332
+        width: 45
+        height: 71
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42ab50e136f7f7ee0800000000000000
+      internalID: -1261149306958267868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_9
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 332
+        width: 55
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 533d0fa8a464fac30800000000000000
+      internalID: 4372791049172603701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_10
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 343
+        width: 48
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d2fd272d5b908330800000000000000
+      internalID: 3711136917344875220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_11
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 358
+        width: 67
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85c337588aaf1f2d0800000000000000
+      internalID: -3246538254657045416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_12
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 347
+        width: 54
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07509d64cd550bf30800000000000000
+      internalID: 4589262424860329328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_13
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 332
+        width: 53
+        height: 75
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35746c53894a7d880800000000000000
+      internalID: -8586213190914390189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_14
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 186
+        width: 49
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a240651cacaef060800000000000000
+      internalID: 6989213526818570915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_15
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 188
+        width: 49
+        height: 106
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24c29daea4d1101a0800000000000000
+      internalID: -6845157751021556670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_16
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 191
+        width: 49
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04e520ca2da131930800000000000000
+      internalID: 4112660376850685504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_17
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 194
+        width: 84
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eec4b1135c80fd9e0800000000000000
+      internalID: -1594546100040413970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_18
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 195
+        width: 48
+        height: 73
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe40bd0605ab81530800000000000000
+      internalID: 3826012737836352751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_19
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 186
+        width: 59
+        height: 107
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 262ec33fabb649210800000000000000
+      internalID: 1338813439924822626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_20
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 39
+        width: 37
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa80638c8e11d8820800000000000000
+      internalID: 2922011424722389162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_21
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 39
+        width: 36
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6abdf8acd04d9c5d0800000000000000
+      internalID: -3041666917613970522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_22
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 40
+        width: 36
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77a36b0a715d16400800000000000000
+      internalID: 315767746349906551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spriteSheet Spidy_23
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 39
+        width: 47
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 302e3539d38cabc30800000000000000
+      internalID: 4376030154734166531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5a8cf4a0865568641bffc7e2c9783e40
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      spriteSheet Spidy_0: 1863734322549137519
+      spriteSheet Spidy_1: 6169028279097707274
+      spriteSheet Spidy_10: 3711136917344875220
+      spriteSheet Spidy_11: -3246538254657045416
+      spriteSheet Spidy_12: 4589262424860329328
+      spriteSheet Spidy_13: -8586213190914390189
+      spriteSheet Spidy_14: 6989213526818570915
+      spriteSheet Spidy_15: -6845157751021556670
+      spriteSheet Spidy_16: 4112660376850685504
+      spriteSheet Spidy_17: -1594546100040413970
+      spriteSheet Spidy_18: 3826012737836352751
+      spriteSheet Spidy_19: 1338813439924822626
+      spriteSheet Spidy_2: -1432378162669739244
+      spriteSheet Spidy_20: 2922011424722389162
+      spriteSheet Spidy_21: -3041666917613970522
+      spriteSheet Spidy_22: 315767746349906551
+      spriteSheet Spidy_23: 4376030154734166531
+      spriteSheet Spidy_3: 6805228718528965550
+      spriteSheet Spidy_4: 4456336799078100476
+      spriteSheet Spidy_5: 966430536728193057
+      spriteSheet Spidy_6: -2040426250982204560
+      spriteSheet Spidy_7: 8563715623364515695
+      spriteSheet Spidy_8: -1261149306958267868
+      spriteSheet Spidy_9: 4372791049172603701
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

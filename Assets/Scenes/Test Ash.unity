@@ -8047,7 +8047,7 @@ MonoBehaviour:
   swingForce: 100
   damper: 20
   wrapOffset: 0.1
-  animator: {fileID: 0}
+  animator: {fileID: 728779998}
   wallMask:
     serializedVersion: 2
     m_Bits: 64

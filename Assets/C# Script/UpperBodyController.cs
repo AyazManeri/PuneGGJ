@@ -35,6 +35,7 @@ public class UpperBodyController : MonoBehaviour
     private List<RopePoint> ropePoints = new List<RopePoint>();
     private float totalRopeLength;
     private bool isGrappling;
+    private bool grappleDirectionSet; // Track if direction was set at grapple start
     
     // Shooting State
     private bool isShooting;
@@ -133,14 +134,19 @@ public class UpperBodyController : MonoBehaviour
             animator.speed = 1f;
         }
 
-        // Flip based on direction of travel
-        if (rb.linearVelocity.x > 0.1f)
+        // Flip based on direction of travel - only when NOT grappling or when grappling just started
+        if (!isGrappling || !grappleDirectionSet)
         {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (rb.linearVelocity.x < -0.1f)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
+            if (rb.linearVelocity.x > 0.1f)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                if (isGrappling) grappleDirectionSet = true; // Lock direction once set during grapple
+            }
+            else if (rb.linearVelocity.x < -0.1f)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                if (isGrappling) grappleDirectionSet = true; // Lock direction once set during grapple
+            }
         }
     }
 
@@ -189,6 +195,7 @@ public class UpperBodyController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             isGrappling = false;
+            grappleDirectionSet = false; // Reset direction lock when grapple ends
             isShooting = false; // Cancel shooting if button released early
             lineRenderer.positionCount = 0;
             if (hookVisualization) hookVisualization.gameObject.SetActive(false);

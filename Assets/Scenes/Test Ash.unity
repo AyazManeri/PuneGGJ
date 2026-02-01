@@ -2844,6 +2844,9 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  animator: {fileID: 0}
+  syncAnimationSpeed: 1
+  baseAnimationSpeed: 1
   disableGravity: 1
 --- !u!1 &535787837
 GameObject:
@@ -5283,6 +5286,7 @@ MonoBehaviour:
   swingForce: 100
   damper: 20
   wrapOffset: 0.1
+  animator: {fileID: 0}
   wallMask:
     serializedVersion: 2
     m_Bits: 64
@@ -6528,6 +6532,9 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  animator: {fileID: 0}
+  syncAnimationSpeed: 1
+  baseAnimationSpeed: 1
   disableGravity: 0
 --- !u!50 &1310750969
 Rigidbody2D:
@@ -7788,7 +7795,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!70 &1636664585
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -7900,6 +7907,9 @@ MonoBehaviour:
   dashCoolDown: 0.6
   canDashInAir: 1
   maxAirDashes: 1
+  animator: {fileID: 0}
+  syncAnimationSpeed: 1
+  baseAnimationSpeed: 1
   disableGravity: 1
 --- !u!50 &1636664588
 Rigidbody2D:
@@ -8037,6 +8047,7 @@ MonoBehaviour:
   swingForce: 100
   damper: 20
   wrapOffset: 0.1
+  animator: {fileID: 0}
   wallMask:
     serializedVersion: 2
     m_Bits: 64

@@ -28,6 +28,9 @@ public class UpperBodyController : MonoBehaviour
     public float damper = 5f;        
     public float wrapOffset = 0.1f;   
 
+    [Header("Animation")]
+    public Animator animator;
+
     private Rigidbody2D rb;
     private List<RopePoint> ropePoints = new List<RopePoint>();
     private float totalRopeLength;
@@ -112,6 +115,17 @@ public class UpperBodyController : MonoBehaviour
             UpdateShootingLogic();
             UpdateLineRenderer();
         }
+
+        HandleAnimations();
+    }
+
+    void HandleAnimations()
+    {
+        if (animator == null) return;
+
+        // Immediate state updates
+        animator.SetBool("isHolding", isWallClimbing);
+        animator.SetBool("isSwing", isGrappling);
     }
 
     void FixedUpdate()

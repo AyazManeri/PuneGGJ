@@ -148,6 +148,11 @@ public class PlayerController : MonoBehaviour
 
     private float defaultGravity;
 
+    [Header("Animation")]
+    public Animator animator;
+    public bool syncAnimationSpeed = true;
+    public float baseAnimationSpeed = 1f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -186,7 +191,40 @@ public class PlayerController : MonoBehaviour
 
         UpdateDashCooldown();
         UpdateWallStickCooldown();
-   
+        
+        HandleAnimations();
+    }
+
+    private void HandleAnimations()
+    {
+        if (animator == null) return;
+
+        // 1. Walk Animation
+        // Use Input for "Snappy" reaction (immediate false when key released)
+        bool isWalking = Mathf.Abs(currentInput.Move.x) > 0.1f;
+        animator.SetBool("isWalking", isWalking);
+
+        // 2. Jump Animation
+        // Use physics state for accuracy
+        bool isJumping = !isGrounded; 
+        animator.SetBool("isJumping", isJumping);
+
+        // 3. Speed Matching
+        if (syncAnimationSpeed && animator.speed != 0) // Check != 0 to prevent divide by zero issues if set externally
+        {
+            float targetSpeed = baseAnimationSpeed;
+
+            if (isWalking && isGrounded)
+            {
+                // Normalize speed based on MoveSpeed
+                // Use Max(0.5f, ...) to ensure feet move even when starting from standstill (acceleration)
+                float normalizedSpeed = Mathf.Abs(rb.linearVelocity.x) / moveSpeed;
+                targetSpeed = Mathf.Max(0.5f, normalizedSpeed) * baseAnimationSpeed;
+            }
+
+            // Smoothly interpolate to target speed to prevent jitter
+            animator.speed = Mathf.Lerp(animator.speed, targetSpeed, Time.deltaTime * 10f);
+        }
     }
 
     void FixedUpdate()
